@@ -1,0 +1,193 @@
+<Container>:
+    orientation: 'vertical'
+
+    result_label: result_label
+    add_player: add_player
+    start_d: start_d
+    #show_players: show_players
+    scroll_players: scroll_players
+    scroll_draw: scroll_draw
+    team: team
+    rate: rate
+    country: country
+    tournament: tournament
+    players: players
+    draw: draw
+    results: results
+    empty: empty
+    box_tournament: box_tournament.__self__
+    box_players: box_players.__self__
+    box_draw: box_draw.__self__
+    box_results: box_results.__self__
+
+    GridLayout:
+        size_hint: 1, 0.15
+        rows: 1
+        cols: 4
+        ToggleButton:
+            id: tournament
+            text: 'Турнир'
+            group: 'top'
+            on_release:
+                root.change_box(1)
+            #on_press: print("ouch! More gently please")
+            #on_release: print("ahhh")
+            #on_state:print("my current state is {}".format(self.state))
+        ToggleButton:
+            id: players
+            text: "Участники"
+            group: 'top'
+            on_release:
+                root.change_box(2)
+        ToggleButton:
+            id: draw
+            text: "Жеребьевка"
+            group: 'top'
+            on_release:
+                root.change_box(3)
+        ToggleButton:
+            id: results
+            text: "Результаты"
+            group: 'top'
+            on_release:
+                root.change_box(4)
+
+    Label:
+        id: empty
+        text: "Начните создавать турнир"
+
+    BoxLayout:
+        id: box_tournament
+        orientation: "vertical"
+        GridLayout:
+            size_hint: 1, 0.15
+            rows: 1
+            cols: 2
+            Label:
+                text: "Название турнира"
+            TextInput:
+
+        GridLayout:
+            size_hint: 1, 0.15
+            rows: 1
+            cols: 2
+            Label:
+                text: "Дата проведения"
+            TextInput:
+
+        GridLayout:
+            size_hint: 1, 0.15
+            rows: 1
+            cols: 2
+            Label:
+                text: "Место проведения"
+            TextInput:
+
+        GridLayout:
+            size_hint: 1, 0.15
+            rows: 1
+            cols: 2
+            Label:
+                text: "Вид спорта"
+            TextInput:
+
+        GridLayout:
+            size_hint: 1, 0.15
+            rows: 1
+            cols: 3
+            Label:
+                text: "Формат турнира и количество туров"
+            TextInput:
+
+            TextInput:
+
+
+
+
+    BoxLayout:
+        id: box_players
+        orientation: "vertical"
+        #Label:
+        #    text: "Players"
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            #always_overscroll: True
+            GridLayout:
+                id: scroll_players
+                cols: 1
+                #minimum_height: 1000
+                size_hint_y: 10
+                row_force_default: True
+                row_default_height: 35
+                #text_size: self.width, None
+                GridLayout:
+                    cols: 3
+                    Label:
+                        text: "Название команды"
+                    Label:
+                        text: "Место в рейтинге"
+                    Label:
+                        text: "Страна"
+                GridLayout:
+                    cols: 3
+                    TextInput:
+                        id: team
+                        hint_text: "Team"
+                        multiline: False
+                    TextInput:
+                        id: rate
+                        hint_text: "Rate"
+                        multiline: False
+                    TextInput:
+                        id: country
+                        hint_text: "Country"
+                        multiline: False
+                Button:
+                    id: add_player
+                    text: "Добавить участника"
+                    on_press:
+                        root.add_player_scroll()
+
+
+    BoxLayout:
+        id: box_draw
+        orientation: "vertical"
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            # always_overscroll: True
+            GridLayout:
+                id: scroll_draw
+                cols: 1
+                size_hint_y: 10
+                row_force_default: True
+                row_default_height: 35
+                #GridLayout:
+                    #cols: 4
+                    #Label:
+                        #text: "№"
+                    #Label:
+                        #text: "Название команды"
+                    #Label:
+                        #text: "Место в рейтинге"
+                    #Label:
+                        #text: "Страна"
+                #Button:
+                    #id: show_players
+                    #text: "Показать игроков"
+                    #on_press:
+                        #root.add_playerS_draw()
+                Button:
+                    id: start_d
+                    text: "Начать жеребьевку"
+                    on_press:
+                        root.start_draw()
+
+
+    BoxLayout:
+        id: box_results
+        orientation: "vertical"
+        Label:
+            id:result_label
+            text: "Results"
