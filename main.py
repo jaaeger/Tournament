@@ -5,15 +5,25 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty
-from kivy.uix.togglebutton import ToggleButton
+# from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.scrollview import ScrollView
+from kivy.base import EventLoop
+
 
 class Container(BoxLayout):
 
+    continue_d = ObjectProperty()
+    id_title = ObjectProperty()
+    id_date = ObjectProperty()
+    id_place = ObjectProperty()
+    id_sport = ObjectProperty()
+    id_format = ObjectProperty()
+    id_count = ObjectProperty()
+    start_t = ObjectProperty()
     result_label = ObjectProperty()
     add_player = ObjectProperty()
     start_d = ObjectProperty()
-    #show_players = ObjectProperty()
+    # show_players = ObjectProperty()
     scroll_players = ObjectProperty()
     scroll_draw = ObjectProperty()
     team = ObjectProperty()
@@ -29,6 +39,7 @@ class Container(BoxLayout):
     box_draw = ObjectProperty()
     box_results = ObjectProperty()
     beacon = 0
+    tournament_list = []
     pl = []
 
     def change_box(self, x):
@@ -96,6 +107,9 @@ class Container(BoxLayout):
         Container.pl.append(self.team.text)
         Container.pl.append(self.rate.text)
         Container.pl.append(self.country.text)
+        self.team.text = ''
+        self.rate.text = ''
+        self.country.text = ''
 
     def add_player_draw(self):
         i = 0
@@ -106,9 +120,13 @@ class Container(BoxLayout):
         self.scroll_draw.add_widget(player)
 
     def continue_draw(self):
+        # self.scroll_draw.remove_widget(Button)
         scroll = ScrollView(do_scroll_x=False, do_scroll_y=True)
-        #top = GridLayout(cols=1, size_hint_y=10, row_force_default=True, row_default_height=35)
+        # top = GridLayout(cols=1, size_hint_y=10, row_force_default=True, row_default_height=35)
         mid = GridLayout(cols=3, size_hint_y=10, row_force_default=True, row_default_height=35)
+        mid.add_widget(Label(text=Container.tournament_list[0]))
+        mid.add_widget(Label(text=Container.tournament_list[1]))
+        mid.add_widget(Label(text=Container.tournament_list[2]))
         mid.add_widget(Label(text='Место в турнире'))
         mid.add_widget(Label(text='Название команды'))
         mid.add_widget(Label(text='Страна'))
@@ -124,19 +142,19 @@ class Container(BoxLayout):
         mid.add_widget(Label(text='4 место'))
         mid.add_widget(Label(text=Container.pl[9]))
         mid.add_widget(Label(text=Container.pl[11]))
-        #top.add_widget(mid)
+        # top.add_widget(mid)
         scroll.add_widget(mid)
         self.box_results.remove_widget(self.result_label)
         self.box_results.add_widget(scroll)
 
     def start_draw(self):
-        #self.scroll_draw.remove_widget(self.show_players)
+        # self.scroll_draw.remove_widget(self.show_players)
         self.scroll_players.remove_widget(self.add_player)
         self.scroll_draw.remove_widget(self.start_d)
-        continue_d = Button(text = 'Продолжить жеребьёвку', on_press = lambda x:Container.continue_draw(self))
+        continue_d = Button(text='Продолжить жеребьёвку', on_press=lambda x: Container.continue_draw(self))
         self.scroll_draw.add_widget(continue_d)
         draw = BoxLayout(orientation='vertical')
-        #draw.add_widget(Button(text='Начать жеребьёвку'))
+        # draw.add_widget(Button(text='Начать жеребьёвку'))
         draw.add_widget(Label(text='Пары(0/2)'))
         tournament_box = GridLayout(cols=5, row_force_default=True, row_default_height=35)
         tournament_box.add_widget(Label(text=str(Container.pl[0])))
@@ -150,14 +168,28 @@ class Container(BoxLayout):
         tournament_box.add_widget(TextInput())
         tournament_box.add_widget(Label(text=str(Container.pl[9])))
         draw.add_widget(tournament_box)
-        #self.remove_widget(self.box_draw)
+        # self.remove_widget(self.box_draw)
         self.scroll_draw.add_widget(draw)
+
+    def start_tournament(self):
+        self.box_tournament.remove_widget(self.start_t)
+        Container.tournament_list.append(self.id_title.text)
+        Container.tournament_list.append(self.id_date.text)
+        Container.tournament_list.append(self.id_place.text)
+        tournament_box = GridLayout(cols=3, row_force_default=True, row_default_height=35)
+        tournament_box.add_widget(Label(text=Container.tournament_list[0]))
+        tournament_box.add_widget(Label(text=Container.tournament_list[1]))
+        tournament_box.add_widget(Label(text=Container.tournament_list[2]))
+        self.scroll_draw.remove_widget(self.start_d)
+        self.scroll_draw.add_widget(tournament_box)
+        self.scroll_draw.add_widget(self.start_d)
 
 
 
 class TournamentApp(App):
 
     def build(self):
+        # Требуется убрать функцию continue_draw и привести всё к одной функции
         c = Container()
         c.remove_widget(c.box_tournament)
         c.remove_widget(c.box_players)

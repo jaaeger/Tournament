@@ -1,6 +1,13 @@
 <Container>:
     orientation: 'vertical'
 
+    id_title: id_title
+    id_date: id_date
+    id_place: id_place
+    id_sport: id_sport
+    id_format: id_format
+    id_count: id_count
+    start_t: start_t
     result_label: result_label
     add_player: add_player
     start_d: start_d
@@ -60,46 +67,75 @@
         id: box_tournament
         orientation: "vertical"
         GridLayout:
-            size_hint: 1, 0.15
-            rows: 1
+            padding: [10, 10, 10, 10]
+            spacing: [10, 10]
+            # size_hint: 1, 0.9
+            rows: 5
             cols: 2
             Label:
                 text: "Название турнира"
+                font_size: 30
             TextInput:
-
-        GridLayout:
-            size_hint: 1, 0.15
-            rows: 1
-            cols: 2
+                id: id_title
+                padding: [6, 20, 6, 20]
+                hint_text: "Name"
+                font_size: 30
+                # halign: "center"
+                multiline: False
             Label:
                 text: "Дата проведения"
+                font_size: 30
             TextInput:
-
-        GridLayout:
-            size_hint: 1, 0.15
-            rows: 1
-            cols: 2
+                id: id_date
+                padding: [6, 20, 6, 20]
+                hint_text: "Date"
+                font_size: 30
+                multiline: False
             Label:
                 text: "Место проведения"
+                font_size: 30
             TextInput:
-
-        GridLayout:
-            size_hint: 1, 0.15
-            rows: 1
-            cols: 2
+                id: id_place
+                padding: [6, 20, 6, 20]
+                hint_text: "Place"
+                font_size: 30
+                multiline: False
             Label:
                 text: "Вид спорта"
+                font_size: 30
             TextInput:
-
-        GridLayout:
-            size_hint: 1, 0.15
-            rows: 1
-            cols: 3
+                id: id_sport
+                padding: [6, 20, 6, 20]
+                hint_text: "Sport"
+                font_size: 30
+                multiline: False
             Label:
                 text: "Формат турнира и количество туров"
-            TextInput:
-
-            TextInput:
+                font_size: 20
+            GridLayout:
+                # size_hint: 1, 0.15
+                rows: 1
+                cols: 2
+                TextInput:
+                    id: id_format
+                    padding: [6, 20, 6, 20]
+                    # background_color: [1,1,1,1]
+                    hint_text: "Format"
+                    font_size: 30
+                    multiline: False
+                TextInput:
+                    id: id_count
+                    padding: [6, 20, 6, 20]
+                    size_hint: 0.35, 1
+                    hint_text: "Count"
+                    font_size: 30
+                    multiline: False
+        Button:
+            id: start_t
+            size_hint: 1, 0.1
+            text: "Начать турнир"
+            on_press:
+                root.start_tournament()
 
 
 
