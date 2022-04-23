@@ -7,7 +7,7 @@ from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty
 # from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.scrollview import ScrollView
-from kivy.base import EventLoop
+# from kivy.base import EventLoop
 
 
 class Container(BoxLayout):
