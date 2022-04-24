@@ -1,3 +1,5 @@
+import random
+
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
@@ -8,6 +10,7 @@ from kivy.properties import ObjectProperty
 # from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.scrollview import ScrollView
 # from kivy.base import EventLoop
+from random import shuffle
 
 
 class Container(BoxLayout):
@@ -18,7 +21,7 @@ class Container(BoxLayout):
     id_place = ObjectProperty()
     id_sport = ObjectProperty()
     id_format = ObjectProperty()
-    id_count = ObjectProperty()
+    # id_count = ObjectProperty()
     start_t = ObjectProperty()
     result_label = ObjectProperty()
     add_player = ObjectProperty()
@@ -39,8 +42,12 @@ class Container(BoxLayout):
     box_draw = ObjectProperty()
     box_results = ObjectProperty()
     beacon = 0
+    is_tournament_start = False
     tournament_list = []
-    pl = []
+    players_info = []
+    players = []
+    all_tours = None
+    now_tour = None
 
     def change_box(self, x):
         if Container.beacon == 1:
@@ -99,30 +106,46 @@ class Container(BoxLayout):
         Container.beacon = x
 
     def start_tournament(self):
-        self.box_tournament.remove_widget(self.start_t)
-        Container.tournament_list.append(self.id_title.text)
-        Container.tournament_list.append(self.id_date.text)
-        Container.tournament_list.append(self.id_place.text)
-        tournament_box = GridLayout(cols=3, row_force_default=True, row_default_height=35)
-        tournament_box.add_widget(Label(text=Container.tournament_list[0]))
-        tournament_box.add_widget(Label(text=Container.tournament_list[1]))
-        tournament_box.add_widget(Label(text=Container.tournament_list[2]))
-        self.scroll_draw.remove_widget(self.start_d)
-        self.scroll_draw.add_widget(tournament_box)
-        self.scroll_draw.add_widget(self.start_d)
+        if self.id_title.text != "" and self.id_date.text != "" and self.id_place.text != "":
+            self.box_tournament.remove_widget(self.start_t)
+            Container.tournament_list.append(self.id_title.text)
+            Container.tournament_list.append(self.id_date.text)
+            Container.tournament_list.append(self.id_place.text)
+            tournament_box = GridLayout(cols=3, row_force_default=True, row_default_height=35)
+            tournament_box.add_widget(Label(text=Container.tournament_list[0]))
+            tournament_box.add_widget(Label(text=Container.tournament_list[1]))
+            tournament_box.add_widget(Label(text=Container.tournament_list[2]))
+            self.scroll_draw.remove_widget(self.start_d)
+            self.scroll_draw.add_widget(tournament_box)
+            self.scroll_draw.add_widget(self.start_d)
+            Container.is_tournament_start = True
+        elif self.id_title.text == "":
+            self.id_title.text = "Введите значение!"
+        elif self.id_date.text == "":
+            self.id_date.text = "Введите значение!"
+        elif self.id_place.text == "":
+            self.id_place.text = "Введите значение!"
 
     def add_player_scroll(self):
-        player = GridLayout(cols=3)
-        player.add_widget(Label(text=self.team.text))
-        player.add_widget(Label(text=self.rate.text))
-        player.add_widget(Label(text=self.country.text))
-        self.scroll_players.add_widget(player)
-        Container.pl.append(self.team.text)
-        Container.pl.append(self.rate.text)
-        Container.pl.append(self.country.text)
-        self.team.text = ''
-        self.rate.text = ''
-        self.country.text = ''
+        if self.team.text != "" and self.rate.text != "" and self.country.text and self.team.text != "Введите значение!" and self.rate.text != "Введите значение!" and self.country.text != "Введите значение!":
+            player = GridLayout(cols=3)
+            player.add_widget(Label(text=self.team.text))
+            player.add_widget(Label(text=self.rate.text))
+            player.add_widget(Label(text=self.country.text))
+            self.scroll_players.add_widget(player)
+            Container.players_info.append(self.team.text)
+            Container.players_info.append(self.rate.text)
+            Container.players_info.append(self.country.text)
+            self.team.text = ""
+            self.rate.text = ""
+            self.country.text = ""
+        elif self.team.text == "":
+            self.team.text = "Введите значение!"
+        elif self.rate.text == "":
+            self.rate.text = "Введите значение!"
+        elif self.country.text == "":
+            self.country.text = "Введите значение!"
+
 
 
     """def add_player_draw(self):
@@ -134,33 +157,61 @@ class Container(BoxLayout):
         self.scroll_draw.add_widget(player)"""
 
     def start_draw(self):
-        # self.scroll_draw.remove_widget(self.show_players)
-        self.scroll_players.remove_widget(self.add_player)
-        self.scroll_draw.remove_widget(self.start_d)
-        continue_d = Button(text='Продолжить жеребьёвку', on_press=lambda x: Container.continue_draw(self))
-        self.scroll_draw.add_widget(continue_d)
-        draw = BoxLayout(orientation='vertical')
-        # draw.add_widget(Button(text='Начать жеребьёвку'))
-        draw.add_widget(Label(text='Пары(0/2)'))
-        tournament_box = GridLayout(cols=5, row_force_default=True, row_default_height=35)
-        tournament_box.add_widget(Label(text=str(Container.pl[0])))
-        tournament_box.add_widget(TextInput())
-        tournament_box.add_widget(Label(text='1:1'))
-        tournament_box.add_widget(TextInput())
-        tournament_box.add_widget(Label(text=str(Container.pl[3])))
-        tournament_box.add_widget(Label(text=str(Container.pl[6])))
-        tournament_box.add_widget(TextInput())
-        tournament_box.add_widget(Label(text='1:1'))
-        tournament_box.add_widget(TextInput())
-        tournament_box.add_widget(Label(text=str(Container.pl[9])))
-        draw.add_widget(tournament_box)
-        # self.remove_widget(self.box_draw)
-        self.scroll_draw.add_widget(draw)
-        child = self.scroll_draw.children
-        child = child[0].children
-        child = child[0].children
-        # print(len(children))
-        print(child)
+        # Пока реализую только Single elimination (турнир на выбывание без сетки лузеров)
+        if len(Container.players_info)/3 <= 128 and len(Container.players_info)/3 >= 2 and len(Container.players) == 0:
+            i = 0
+            while len(Container.players) != len(Container.players_info)/3:
+                Container.players.append(Container.players_info[i])
+                i += 3
+            random.shuffle(Container.players)
+            j = len(Container.players) // 2
+            i = 1
+            while j != 1:
+                j = j // 2
+                i += 1
+            if 2 ** i == len(Container.players):
+                Container.all_tours = i
+            else:
+                Container.all_tours = i + 1
+            Container.now_tour = 1
+            draw = BoxLayout(orientation='vertical')
+            draw.add_widget(Label(text='Тур(' + str(Container.now_tour) + '/' + str(Container.all_tours) + ')'))
+
+            # // div
+            # % mod
+            # Container.all_tours = len(Container.players) // 2 # количество шагов в сетке
+            # Container.now_tour = 1
+
+
+
+            # self.scroll_draw.remove_widget(self.show_players)
+            self.scroll_players.remove_widget(self.add_player) # убирает кнопку добавления игроков
+            # self.scroll_draw.remove_widget(self.start_d) # убирает свою же кнопку
+            # continue_d = Button(text='Продолжить жеребьёвку', on_press=lambda x: Container.continue_draw(self))
+            # self.scroll_draw.add_widget(continue_d)
+            # draw.add_widget(Button(text='Начать жеребьёвку'))
+
+
+            tournament_box = GridLayout(cols=4, row_force_default=True, row_default_height=35)
+            tournament_box.add_widget(Label(text=str(Container.players_info[0])))
+            tournament_box.add_widget(TextInput())
+            tournament_box.add_widget(TextInput())
+            tournament_box.add_widget(Label(text=str(Container.players_info[3])))
+            # tournament_box.add_widget(Label(text=str(Container.players_info[6])))
+            # tournament_box.add_widget(TextInput())
+            # tournament_box.add_widget(TextInput())
+            # tournament_box.add_widget(Label(text=str(Container.players_info[9])))
+            draw.add_widget(tournament_box)
+            # self.remove_widget(self.box_draw)
+            self.scroll_draw.add_widget(draw)
+            child = self.scroll_draw.children
+            child = child[0].children
+            child = child[0].children
+            # print(len(children))
+            print(child)
+        elif len(Container.players_info)/3 <= 128 and len(Container.players_info)/3 >= 2 and len(Container.players) != 0:
+            pass
+
 
     def continue_draw(self):
         # self.scroll_draw.remove_widget(Button)
@@ -174,17 +225,17 @@ class Container(BoxLayout):
         mid.add_widget(Label(text='Название команды'))
         mid.add_widget(Label(text='Страна'))
         mid.add_widget(Label(text='1 место'))
-        mid.add_widget(Label(text=Container.pl[0]))
-        mid.add_widget(Label(text=Container.pl[2]))
+        mid.add_widget(Label(text=Container.players_info[0]))
+        mid.add_widget(Label(text=Container.players_info[2]))
         mid.add_widget(Label(text='2 место'))
-        mid.add_widget(Label(text=Container.pl[3]))
-        mid.add_widget(Label(text=Container.pl[5]))
+        mid.add_widget(Label(text=Container.players_info[3]))
+        mid.add_widget(Label(text=Container.players_info[5]))
         mid.add_widget(Label(text='3 место'))
-        mid.add_widget(Label(text=Container.pl[6]))
-        mid.add_widget(Label(text=Container.pl[8]))
+        mid.add_widget(Label(text=Container.players_info[6]))
+        mid.add_widget(Label(text=Container.players_info[8]))
         mid.add_widget(Label(text='4 место'))
-        mid.add_widget(Label(text=Container.pl[9]))
-        mid.add_widget(Label(text=Container.pl[11]))
+        mid.add_widget(Label(text=Container.players_info[9]))
+        mid.add_widget(Label(text=Container.players_info[11]))
         # top.add_widget(mid)
         scroll.add_widget(mid)
         self.box_results.remove_widget(self.result_label)

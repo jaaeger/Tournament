@@ -6,7 +6,7 @@
     id_place: id_place
     id_sport: id_sport
     id_format: id_format
-    id_count: id_count
+    # id_count: id_count
     start_t: start_t
     result_label: result_label
     add_player: add_player
@@ -119,21 +119,21 @@
                 # font_size: 30
                 # multiline: False
             Label:
-                text: "Формат турнира и количество туров"
-                font_size: 20
-            GridLayout:
+                text: "Формат турнира"
+                font_size: 30
+            # GridLayout:
                 # size_hint: 1, 0.15
-                rows: 1
-                cols: 2
-                Spinner:
-                    id: id_format
-                    # padding:
-                    pos_hint: {'center': (.5, .5)}
-                    text: "Single"
-                    font_size: 30
-                    values: "Single", "Double", "Other"
-                    on_text:
-                        print('Hi')
+                # rows: 1
+                # cols: 2
+            Spinner:
+                id: id_format
+                # padding:
+                pos_hint: {'center': (.5, .5)}
+                text: "Single"
+                font_size: 30
+                values: "Single", "Double", "Other"
+                on_text:
+                    print('Hi')
                 # TextInput:
                     # id: id_format
                     # padding: [6, 20, 6, 20]
@@ -141,13 +141,13 @@
                     # hint_text: "Format"
                     # font_size: 30
                     # multiline: False
-                TextInput:
-                    id: id_count
-                    padding: [6, 20, 6, 20]
-                    size_hint: 0.35, 1
-                    hint_text: "Count"
-                    font_size: 30
-                    multiline: False
+                # TextInput:
+                    # id: id_count
+                    # padding: [6, 20, 6, 20]
+                    # size_hint: 0.35, 1
+                    # hint_text: "Count"
+                    # font_size: 30
+                    # multiline: False
         Button:
             id: start_t
             size_hint: 1, 0.1
