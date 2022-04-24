@@ -46,8 +46,10 @@ class Container(BoxLayout):
     tournament_list = []
     players_info = []
     players = []
+    players_l = []
     all_tours = None
     now_tour = None
+    child = None
 
     def change_box(self, x):
         if Container.beacon == 1:
@@ -159,6 +161,7 @@ class Container(BoxLayout):
     def start_draw(self):
         # Пока реализую только Single elimination (турнир на выбывание без сетки лузеров)
         if len(Container.players_info)/3 <= 128 and len(Container.players_info)/3 >= 2 and len(Container.players) == 0:
+            self.scroll_players.remove_widget(self.add_player) # убирает кнопку добавления игроков
             i = 0
             while len(Container.players) != len(Container.players_info)/3:
                 Container.players.append(Container.players_info[i])
@@ -169,48 +172,96 @@ class Container(BoxLayout):
             while j != 1:
                 j = j // 2
                 i += 1
-            if 2 ** i == len(Container.players):
+            raznica = len(Container.players) - 2 ** i
+            if raznica == 0:
                 Container.all_tours = i
             else:
                 Container.all_tours = i + 1
             Container.now_tour = 1
             draw = BoxLayout(orientation='vertical')
             draw.add_widget(Label(text='Тур(' + str(Container.now_tour) + '/' + str(Container.all_tours) + ')'))
-
-            # // div
-            # % mod
-            # Container.all_tours = len(Container.players) // 2 # количество шагов в сетке
-            # Container.now_tour = 1
-
-
-
-            # self.scroll_draw.remove_widget(self.show_players)
-            self.scroll_players.remove_widget(self.add_player) # убирает кнопку добавления игроков
-            # self.scroll_draw.remove_widget(self.start_d) # убирает свою же кнопку
-            # continue_d = Button(text='Продолжить жеребьёвку', on_press=lambda x: Container.continue_draw(self))
-            # self.scroll_draw.add_widget(continue_d)
-            # draw.add_widget(Button(text='Начать жеребьёвку'))
-
-
             tournament_box = GridLayout(cols=4, row_force_default=True, row_default_height=35)
-            tournament_box.add_widget(Label(text=str(Container.players_info[0])))
-            tournament_box.add_widget(TextInput())
-            tournament_box.add_widget(TextInput())
-            tournament_box.add_widget(Label(text=str(Container.players_info[3])))
-            # tournament_box.add_widget(Label(text=str(Container.players_info[6])))
-            # tournament_box.add_widget(TextInput())
-            # tournament_box.add_widget(TextInput())
-            # tournament_box.add_widget(Label(text=str(Container.players_info[9])))
+            j = 0
+            if raznica == 0:
+                while j != len(Container.players):
+                    tournament_box.add_widget(Label(text=str(Container.players[j])))
+                    tournament_box.add_widget(TextInput())
+                    tournament_box.add_widget(TextInput())
+                    tournament_box.add_widget(Label(text=str(Container.players[j+1])))
+                    j+=2
+            else:
+                while j != raznica*2:
+                    tournament_box.add_widget(Label(text=str(Container.players[j])))
+                    tournament_box.add_widget(TextInput())
+                    tournament_box.add_widget(TextInput())
+                    tournament_box.add_widget(Label(text=str(Container.players[j + 1])))
+                    j += 2
             draw.add_widget(tournament_box)
-            # self.remove_widget(self.box_draw)
             self.scroll_draw.add_widget(draw)
-            child = self.scroll_draw.children
-            child = child[0].children
-            child = child[0].children
+            Container.child = self.scroll_draw.children
+            Container.child = Container.child[0].children
+            Container.child = Container.child[0].children
             # print(len(children))
-            print(child)
-        elif len(Container.players_info)/3 <= 128 and len(Container.players_info)/3 >= 2 and len(Container.players) != 0:
-            pass
+            print(len(Container.child))
+        elif len(Container.players) != 0:
+            j = 0
+            while j != len(Container.child):
+                if int(Container.child[j+1].text) >= int(Container.child[j+2].text):
+                    Container.players_l.append(Container.child[j+3].text)
+                    Container.players.remove(Container.child[j+3].text)
+                elif int(Container.child[j+1].text) <= int(Container.child[j+2].text):
+                    Container.players_l.append(Container.child[j].text)
+                    Container.players.remove(Container.child[j].text)
+                j += 4
+            print(Container.players_l)
+            print(Container.players)
+            self.scroll_draw.clear_widgets(children = None)
+            Container.now_tour += 1
+            if Container.now_tour <= Container.all_tours:
+                self.scroll_draw.add_widget(self.start_d)
+
+                draw = BoxLayout(orientation='vertical')
+                draw.add_widget(Label(text='Тур(' + str(Container.now_tour) + '/' + str(Container.all_tours) + ')'))
+                tournament_box = GridLayout(cols=4, row_force_default=True, row_default_height=35)
+                j = 0
+                while j != len(Container.players):
+                    tournament_box.add_widget(Label(text=str(Container.players[j])))
+                    tournament_box.add_widget(TextInput())
+                    tournament_box.add_widget(TextInput())
+                    tournament_box.add_widget(Label(text=str(Container.players[j + 1])))
+                    j += 2
+                draw.add_widget(tournament_box)
+                self.scroll_draw.add_widget(draw)
+                Container.child = self.scroll_draw.children
+                Container.child = Container.child[0].children
+                Container.child = Container.child[0].children
+                # print(len(children))
+                print(Container.child)
+            else:
+
+                # self.scroll_draw.remove_widget(Button)
+                scroll = ScrollView(do_scroll_x=False, do_scroll_y=True)
+                # top = GridLayout(cols=1, size_hint_y=10, row_force_default=True, row_default_height=35)
+                mid = GridLayout(cols=3, size_hint_y=10, row_force_default=True, row_default_height=35)
+                mid.add_widget(Label(text=Container.tournament_list[0]))
+                mid.add_widget(Label(text=Container.tournament_list[1]))
+                mid.add_widget(Label(text=Container.tournament_list[2]))
+                mid.add_widget(Label(text='Место в турнире'))
+                mid.add_widget(Label(text='Название команды'))
+                mid.add_widget(Label(text='Страна'))
+                mid.add_widget(Label(text='1 место'))
+                mid.add_widget(Label(text=Container.players[0]))
+                mid.add_widget(Label(text=Container.players_info[2]))
+                j = 0
+                while j !=  len(Container.players_l):
+                    mid.add_widget(Label(text=str(j+2) + ' место'))
+                    mid.add_widget(Label(text=Container.players_l[-j]))
+                    mid.add_widget(Label(text=Container.players_info[2]))
+                    j += 1
+                # top.add_widget(mid)
+                scroll.add_widget(mid)
+                self.box_results.remove_widget(self.result_label)
+                self.box_results.add_widget(scroll)
 
 
     def continue_draw(self):
@@ -245,7 +296,6 @@ class Container(BoxLayout):
 class TournamentApp(App):
 
     def build(self):
-        # Требуется убрать функцию continue_draw и привести всё к одной функции
         c = Container()
         c.remove_widget(c.box_tournament)
         c.remove_widget(c.box_players)
