@@ -1,59 +1,51 @@
 <Container>:
     orientation: 'vertical'
 
+    empty: empty
+
+    box_tournament: box_tournament.__self__
     id_title: id_title
     id_date: id_date
     id_place: id_place
     id_sport: id_sport
     id_format: id_format
-    # id_count: id_count
     start_t: start_t
-    result_label: result_label
-    add_player: add_player
-    start_d: start_d
-    #show_players: show_players
-    scroll_players: scroll_players
-    scroll_draw: scroll_draw
-    team: team
-    rate: rate
-    country: country
-    tournament: tournament
-    players: players
-    draw: draw
-    results: results
-    empty: empty
-    box_tournament: box_tournament.__self__
+
     box_players: box_players.__self__
+    scroll_players: scroll_players
+    id_team: id_team
+    id_rate: id_rate
+    id_country: id_country
+    add_p: add_p
+
     box_draw: box_draw.__self__
+    scroll_draw: scroll_draw
+    start_d: start_d
+
     box_results: box_results.__self__
+    results_label: results_label
+
 
     GridLayout:
         size_hint: 1, 0.15
         rows: 1
         cols: 4
         ToggleButton:
-            id: tournament
             text: 'Турнир'
             group: 'top'
             on_release:
                 root.change_box(1)
-            #on_press: print("ouch! More gently please")
-            #on_release: print("ahhh")
-            #on_state:print("my current state is {}".format(self.state))
         ToggleButton:
-            id: players
             text: "Участники"
             group: 'top'
             on_release:
                 root.change_box(2)
         ToggleButton:
-            id: draw
             text: "Жеребьевка"
             group: 'top'
             on_release:
                 root.change_box(3)
         ToggleButton:
-            id: results
             text: "Результаты"
             group: 'top'
             on_release:
@@ -69,7 +61,6 @@
         GridLayout:
             padding: [10, 10, 10, 10]
             spacing: [10, 10]
-            # size_hint: 1, 0.9
             rows: 5
             cols: 2
             Label:
@@ -80,7 +71,6 @@
                 padding: [6, 20, 6, 20]
                 hint_text: "Name"
                 font_size: 30
-                # halign: "center"
                 multiline: False
             Label:
                 text: "Дата проведения"
@@ -112,77 +102,36 @@
                 values: "Hockey", "Football", "Volleyball", "Litrboll"
                 on_text:
                     print('Hi')
-            # TextInput:
-                # id: id_sport
-                # padding: [6, 20, 6, 20]
-                # hint_text: "Sport"
-                # font_size: 30
-                # multiline: False
             Label:
                 text: "Формат турнира"
                 font_size: 30
-            # GridLayout:
-                # size_hint: 1, 0.15
-                # rows: 1
-                # cols: 2
             Spinner:
                 id: id_format
-                # padding:
                 pos_hint: {'center': (.5, .5)}
                 text: "Single"
                 font_size: 30
                 values: "Single", "Double", "Other"
                 on_text:
                     print('Hi')
-                # TextInput:
-                    # id: id_format
-                    # padding: [6, 20, 6, 20]
-                    # background_color: [1,1,1,1]
-                    # hint_text: "Format"
-                    # font_size: 30
-                    # multiline: False
-                # TextInput:
-                    # id: id_count
-                    # padding: [6, 20, 6, 20]
-                    # size_hint: 0.35, 1
-                    # hint_text: "Count"
-                    # font_size: 30
-                    # multiline: False
         Button:
             id: start_t
             size_hint: 1, 0.1
             text: "Начать турнир"
             on_press:
                 root.start_tournament()
-        # Spinner:
-            # size_hint: None, None
-            # size: 100, 44
-            # pos_hint: {'center': (.5, .5)}
-            # text: 'Home'
-            # values: 'Home', 'Work', 'Other', 'Custom'
-            # on_text:
-                # print("The spinner {} has text {}".format(self, self.text))
-
-
-
 
     BoxLayout:
         id: box_players
         orientation: "vertical"
-        #Label:
-        #    text: "Players"
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
-            #always_overscroll: True
             GridLayout:
                 id: scroll_players
                 cols: 1
-                #minimum_height: 1000
                 size_hint_y: 10
                 row_force_default: True
                 row_default_height: 35
-                #text_size: self.width, None
                 GridLayout:
                     cols: 3
                     Label:
@@ -194,23 +143,22 @@
                 GridLayout:
                     cols: 3
                     TextInput:
-                        id: team
+                        id: id_team
                         hint_text: "Team"
                         multiline: False
                     TextInput:
-                        id: rate
+                        id: id_rate
                         hint_text: "Rate"
                         multiline: False
                     TextInput:
-                        id: country
+                        id: id_country
                         hint_text: "Country"
                         multiline: False
                 Button:
-                    id: add_player
+                    id: add_p
                     text: "Добавить участника"
                     on_press:
-                        root.add_player_scroll()
-
+                        root.add_player()
 
     BoxLayout:
         id: box_draw
@@ -218,28 +166,12 @@
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
-            # always_overscroll: True
             GridLayout:
                 id: scroll_draw
                 cols: 1
                 size_hint_y: 10
                 row_force_default: True
                 row_default_height: 35
-                #GridLayout:
-                    #cols: 4
-                    #Label:
-                        #text: "№"
-                    #Label:
-                        #text: "Название команды"
-                    #Label:
-                        #text: "Место в рейтинге"
-                    #Label:
-                        #text: "Страна"
-                #Button:
-                    #id: show_players
-                    #text: "Показать игроков"
-                    #on_press:
-                        #root.add_playerS_draw()
                 Button:
                     id: start_d
                     text: "Жеребьевка"
@@ -251,5 +183,5 @@
         id: box_results
         orientation: "vertical"
         Label:
-            id:result_label
+            id:results_label
             text: "Results"
