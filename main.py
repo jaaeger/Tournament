@@ -6,6 +6,7 @@ from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty
 from kivy.uix.scrollview import ScrollView
 from random import shuffle
+from datetime import date
 
 
 class Container(BoxLayout):
@@ -100,30 +101,36 @@ class Container(BoxLayout):
         Container.beacon = x
 
     def start_tournament(self):
-        if self.id_title.text != "" and self.id_date.text != "" and self.id_place.text != "":
-            self.box_tournament.remove_widget(self.start_t)
-            Container.tournament_list.append(self.id_title.text)
-            Container.tournament_list.append(self.id_date.text)
-            Container.tournament_list.append(self.id_place.text)
-            tournament_box = GridLayout(cols=3, row_force_default=True, row_default_height=35)
-            tournament_box.add_widget(Label(text=Container.tournament_list[0]))
-            tournament_box.add_widget(Label(text=Container.tournament_list[1]))
-            tournament_box.add_widget(Label(text=Container.tournament_list[2]))
-            self.scroll_draw.remove_widget(self.start_d)
-            self.scroll_draw.add_widget(tournament_box)
-            self.scroll_draw.add_widget(self.start_d)
-            Container.is_tournament_start = True
-        elif self.id_title.text == "":
-            self.id_title.text = "Введите значение!"
-        elif self.id_date.text == "":
-            self.id_date.text = "Введите значение!"
-        elif self.id_place.text == "":
-            self.id_place.text = "Введите значение!"
+        d = self.id_date.text
+        d = d.split('.', 2)
+        try:
+            d = date(int(d[2]), int(d[1]), int(d[0]))
+            if self.id_title.text.isalnum() and self.id_place.text.isalpha() and d >= date.today():
+                self.box_tournament.remove_widget(self.start_t)
+                Container.tournament_list.append(self.id_title.text)
+                Container.tournament_list.append(self.id_date.text)
+                Container.tournament_list.append(self.id_place.text)
+                tournament_box = GridLayout(cols=3, row_force_default=True, row_default_height=35)
+                tournament_box.add_widget(Label(text=Container.tournament_list[0]))
+                tournament_box.add_widget(Label(text=Container.tournament_list[1]))
+                tournament_box.add_widget(Label(text=Container.tournament_list[2]))
+                self.scroll_draw.remove_widget(self.start_d)
+                self.scroll_draw.add_widget(tournament_box)
+                self.scroll_draw.add_widget(self.start_d)
+                Container.is_tournament_start = True
+            elif self.id_title.text.isalnum() is False:
+                self.id_title.text = "Некорректно"
+            elif self.id_place.text.isalpha() is False:
+                self.id_place.text = "Некорректно"
+        except ValueError:
+            self.id_date.text = "Некорректно"
+        except IndexError:
+            self.id_date.text = "Некорректно"
+        except OverflowError:
+            self.id_date.text = "Некорректно"
 
     def add_player(self):
-        if self.id_team.text != "" and self.id_rate.text != "" and self.id_country.text and \
-                self.id_team.text != "Введите значение!" and self.id_rate.text != "Введите значение!"\
-                and self.id_country.text != "Введите значение!":
+        if self.id_team.text.isalnum() and self.id_rate.text.isdigit() and self.id_country.text.isalpha():
             player = GridLayout(cols=3)
             player.add_widget(Label(text=self.id_team.text))
             player.add_widget(Label(text=self.id_rate.text))
@@ -135,12 +142,12 @@ class Container(BoxLayout):
             self.id_team.text = ""
             self.id_rate.text = ""
             self.id_country.text = ""
-        elif self.id_team.text == "":
-            self.id_team.text = "Введите значение!"
-        elif self.id_rate.text == "":
-            self.id_rate.text = "Введите значение!"
-        elif self.id_country.text == "":
-            self.id_country.text = "Введите значение!"
+        elif self.id_team.text.isalnum() is False:
+            self.id_team.text = "Некорректно"
+        elif self.id_rate.text.isdigit() is False:
+            self.id_rate.text = "Некорректно"
+        elif self.id_country.text.isalpha() is False:
+            self.id_country.text = "Некорректно"
 
     def start_draw(self):
         # Пока реализую только Single elimination (турнир на выбывание без сетки лузеров)
@@ -190,12 +197,19 @@ class Container(BoxLayout):
         elif len(Container.players_w) != 0:
             j = 0
             while j != len(Container.child):
-                if int(Container.child[j + 1].text) >= int(Container.child[j + 2].text):
-                    Container.players_l.append(Container.child[j + 3].text)
-                    Container.players_w.remove(Container.child[j + 3].text)
-                elif int(Container.child[j + 1].text) <= int(Container.child[j + 2].text):
-                    Container.players_l.append(Container.child[j].text)
-                    Container.players_w.remove(Container.child[j].text)
+                try:
+                    if int(Container.child[j + 1].text) > int(Container.child[j + 2].text) and\
+                            Container.child[j + 1].text.isdigit() and Container.child[j + 2].text.isdigit():
+                        Container.players_l.append(Container.child[j + 3].text)
+                        Container.players_w.remove(Container.child[j + 3].text)
+                    elif int(Container.child[j + 1].text) < int(Container.child[j + 2].text) and\
+                            Container.child[j + 1].text.isdigit() and Container.child[j + 2].text.isdigit():
+                        Container.players_l.append(Container.child[j].text)
+                        Container.players_w.remove(Container.child[j].text)
+                except ValueError:
+                    Container.child[j + 1].text = 'Некорректно'
+                    Container.child[j + 2].text = 'Некорректно'
+
                 j += 4
             # print(Container.players_l)
             # print(Container.players)
