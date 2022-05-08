@@ -35,6 +35,7 @@ class Container(BoxLayout):
     results_label = ObjectProperty()
 
     beacon = 0
+    is_correct = True
     is_tournament_start = False
     tournament_list = []
     players_info = []
@@ -196,68 +197,77 @@ class Container(BoxLayout):
             # print(len(Container.child))
         elif len(Container.players_w) != 0:
             j = 0
+            a = 0
+            b = 0
             while j != len(Container.child):
-                try:
-                    if int(Container.child[j + 1].text) > int(Container.child[j + 2].text) and\
-                            Container.child[j + 1].text.isdigit() and Container.child[j + 2].text.isdigit():
-                        Container.players_l.append(Container.child[j + 3].text)
-                        Container.players_w.remove(Container.child[j + 3].text)
-                    elif int(Container.child[j + 1].text) < int(Container.child[j + 2].text) and\
-                            Container.child[j + 1].text.isdigit() and Container.child[j + 2].text.isdigit():
-                        Container.players_l.append(Container.child[j].text)
-                        Container.players_w.remove(Container.child[j].text)
-                except ValueError:
+                if Container.child[j + 1].text.isdigit() and Container.child[j + 2].text.isdigit():
+                    if int(Container.child[j + 1].text) == int(Container.child[j + 2].text):
+                        Container.child[j + 1].text = 'Некорректно'
+                        Container.child[j + 2].text = 'Некорректно'
+                    else:
+                        a += 1
+                elif Container.child[j + 1].text.isdigit() is False or Container.child[j + 2].text.isdigit() is False:
                     Container.child[j + 1].text = 'Некорректно'
                     Container.child[j + 2].text = 'Некорректно'
-
+                b += 1
                 j += 4
             # print(Container.players_l)
             # print(Container.players)
-            self.scroll_draw.clear_widgets(children=None)
-            Container.now_tour += 1
-            if Container.now_tour <= Container.all_tours:
-                self.scroll_draw.add_widget(self.start_d)
+            if a == b:
+                j = 0
+                while j != len(Container.child):
+                    if int(Container.child[j + 1].text) > int(Container.child[j + 2].text):
+                        Container.players_l.append(Container.child[j + 3].text)
+                        Container.players_w.remove(Container.child[j + 3].text)
+                    elif int(Container.child[j + 1].text) < int(Container.child[j + 2].text):
+                        Container.players_l.append(Container.child[j].text)
+                        Container.players_w.remove(Container.child[j].text)
+                    j += 4
+                self.scroll_draw.clear_widgets(children=None)
+                Container.now_tour += 1
+                if Container.now_tour <= Container.all_tours:
+                    self.scroll_draw.add_widget(self.start_d)
 
-                draw = BoxLayout(orientation='vertical')
-                draw.add_widget(Label(text='Тур(' + str(Container.now_tour) + '/' + str(Container.all_tours) + ')'))
-                tournament_box = GridLayout(cols=4, row_force_default=True, row_default_height=35)
-                j = 0
-                while j != len(Container.players_w):
-                    tournament_box.add_widget(Label(text=str(Container.players_w[j])))
-                    tournament_box.add_widget(TextInput())
-                    tournament_box.add_widget(TextInput())
-                    tournament_box.add_widget(Label(text=str(Container.players_w[j + 1])))
-                    j += 2
-                draw.add_widget(tournament_box)
-                self.scroll_draw.add_widget(draw)
-                Container.child = self.scroll_draw.children
-                Container.child = Container.child[0].children
-                Container.child = Container.child[0].children
-                # print(len(children))
-                print(Container.child)
-            else:
-                scroll = ScrollView(do_scroll_x=False, do_scroll_y=True)
-                mid = GridLayout(cols=3, size_hint_y=10, row_force_default=True, row_default_height=35)
-                mid.add_widget(Label(text=Container.tournament_list[0]))
-                mid.add_widget(Label(text=Container.tournament_list[1]))
-                mid.add_widget(Label(text=Container.tournament_list[2]))
-                mid.add_widget(Label(text='Место в турнире'))
-                mid.add_widget(Label(text='Название команды'))
-                mid.add_widget(Label(text='Страна'))
-                mid.add_widget(Label(text='1 место'))
-                mid.add_widget(Label(text=Container.players_w[0]))
-                mid.add_widget(
-                    Label(text=Container.players_info[Container.players_info.index(Container.players_w[0]) + 2]))
-                j = 0
-                while j != len(Container.players_l):
-                    mid.add_widget(Label(text=str(j + 2) + ' место'))
-                    mid.add_widget(Label(text=Container.players_l[-(j + 1)]))
-                    mid.add_widget(Label(
-                        text=Container.players_info[Container.players_info.index(Container.players_l[-(j + 1)]) + 2]))
-                    j += 1
-                scroll.add_widget(mid)
-                self.box_results.remove_widget(self.results_label)
-                self.box_results.add_widget(scroll)
+                    draw = BoxLayout(orientation='vertical')
+                    draw.add_widget(Label(text='Тур(' + str(Container.now_tour) + '/' + str(Container.all_tours) + ')'))
+                    tournament_box = GridLayout(cols=4, row_force_default=True, row_default_height=35)
+                    j = 0
+                    while j != len(Container.players_w):
+                        tournament_box.add_widget(Label(text=str(Container.players_w[j])))
+                        tournament_box.add_widget(TextInput())
+                        tournament_box.add_widget(TextInput())
+                        tournament_box.add_widget(Label(text=str(Container.players_w[j + 1])))
+                        j += 2
+                    draw.add_widget(tournament_box)
+                    self.scroll_draw.add_widget(draw)
+                    Container.child = self.scroll_draw.children
+                    Container.child = Container.child[0].children
+                    Container.child = Container.child[0].children
+                    # print(len(children))
+                    # print(Container.child)
+                else:
+                    scroll = ScrollView(do_scroll_x=False, do_scroll_y=True)
+                    mid = GridLayout(cols=3, size_hint_y=10, row_force_default=True, row_default_height=35)
+                    mid.add_widget(Label(text=Container.tournament_list[0]))
+                    mid.add_widget(Label(text=Container.tournament_list[1]))
+                    mid.add_widget(Label(text=Container.tournament_list[2]))
+                    mid.add_widget(Label(text='Место в турнире'))
+                    mid.add_widget(Label(text='Название команды'))
+                    mid.add_widget(Label(text='Страна'))
+                    mid.add_widget(Label(text='1 место'))
+                    mid.add_widget(Label(text=Container.players_w[0]))
+                    mid.add_widget(
+                        Label(text=Container.players_info[Container.players_info.index(Container.players_w[0]) + 2]))
+                    j = 0
+                    while j != len(Container.players_l):
+                        mid.add_widget(Label(text=str(j + 2) + ' место'))
+                        mid.add_widget(Label(text=Container.players_l[-(j + 1)]))
+                        mid.add_widget(Label(
+                            text=Container.players_info[Container.players_info.index(Container.players_l[-(j + 1)]) + 2]))
+                        j += 1
+                    scroll.add_widget(mid)
+                    self.box_results.remove_widget(self.results_label)
+                    self.box_results.add_widget(scroll)
 
 
 class TournamentApp(App):
