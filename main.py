@@ -152,7 +152,8 @@ class Container(BoxLayout):
 
     def start_draw(self):
         # Пока реализую только Single elimination (турнир на выбывание без сетки лузеров)
-        if 128 >= len(Container.players_info) / 3 >= 2 and len(Container.players_w) == 0:
+        if 128 >= len(Container.players_info) / 3 >= 2 and len(Container.players_w) == 0 \
+                and Container.is_tournament_start:
             self.scroll_players.remove_widget(self.add_p)
             i = 0
             while len(Container.players_w) != len(Container.players_info) / 3:
@@ -226,6 +227,11 @@ class Container(BoxLayout):
                 self.scroll_draw.clear_widgets(children=None)
                 Container.now_tour += 1
                 if Container.now_tour <= Container.all_tours:
+                    tournament_box = GridLayout(cols=3, row_force_default=True, row_default_height=35)
+                    tournament_box.add_widget(Label(text=Container.tournament_list[0]))
+                    tournament_box.add_widget(Label(text=Container.tournament_list[1]))
+                    tournament_box.add_widget(Label(text=Container.tournament_list[2]))
+                    self.scroll_draw.add_widget(tournament_box)
                     self.scroll_draw.add_widget(self.start_d)
 
                     draw = BoxLayout(orientation='vertical')
